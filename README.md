@@ -18,10 +18,9 @@
 
 ## 🎮 在线玩（网页版）
 
-把仓库开启 **GitHub Pages** 后即可访问：
-`https://<你的用户名>.github.io/lover-chess/`
+直接访问：**https://xfdg.github.io/lover-chess/**
 
-> Settings → Pages → Source 选 `main` 分支 / `root`，保存即可。
+> 首次加载稍慢（需拉取 CSS/JS 模块），稍等几秒即可。
 
 ## 💻 桌面版（.exe / .dmg）
 
@@ -56,11 +55,23 @@ npm run dist         # 当前平台
 
 ```
 lover-chess/
-├── index.html   # 游戏本体（单文件，含全部逻辑与样式）
-├── main.js      # Electron 桌面入口
-├── package.json # 依赖与打包配置
-└── README.md
+├── index.html              # 页面骨架（仅 HTML 结构）
+├── main.js                 # Electron 桌面入口
+├── package.json            # 依赖与打包配置
+├── .nojekyll               # 绕过 GitHub Pages 的 Jekyll 处理
+├── README.md
+├── src/
+│   ├── css/
+│   │   └── style.css       # 全部样式（R18 暗红主题 + 响应式）
+│   ├── js/
+│   │   ├── config.js       # 棋盘几何 / 格子类型 / 难度配置
+│   │   └── game.js         # 游戏逻辑（走子、AI、渲染、事件卡）
+│   └── data/
+│       └── cards.js        # R18 事件卡数据（惩罚48 / 奖励25 / 心动20）
+└── assets/                 # 预留：图标、音效等资源
 ```
+
+> 采用「结构 / 表现 / 行为 / 数据」分离：改玩法逻辑只动 `src/js/`，换卡池只动 `src/data/`，调样式只动 `src/css/`。
 
 ## 🕹️ 玩法
 
