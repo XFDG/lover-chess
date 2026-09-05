@@ -43,7 +43,9 @@ const HOMEENTRY={pink:51, blue:9}; // after this track index, piece goes to home
 const SAFE=new Set([0,10,13,23,26,36,39,52]); // start cells + star corners
 const JUMP=new Set([3,16,29,42]);   // +4 jump cells (one per color region)
 const SKIP=new Set([7,20,33,46]);   // pause cells
-const HEART=new Set([1,14,27,40,53]); // 心动格（情趣模式触发事件卡）
+const HEART=new Set([1,14,27,40,53]); // 心动格（触发事件卡）
+const LUCKY=new Set([5,18,31,44,50]);  // 🍀 幸运格：触发奖励卡
+const TRAP=new Set([9,22,35,48,54]);   // 💥 陷阱格：触发惩罚卡
 // finish center cells
 const FINISH_CELLS=[[6,6],[6,7],[6,8],[7,6],[7,7],[7,8],[8,6],[8,7],[8,8]];
 

@@ -45,7 +45,7 @@ function isSafe(color,step){
 }
 function applyMove(color,idx,dice){
   const p=state.pieces[color][idx];
-  let extra=0,skip=false,msg="";
+  let extra=0,skip=false,msg="",tileEffect=null;
   if(p.step<0){ p.step=0; msg="起飞！💗"; }
   else { p.step+=dice; }
   if(p.step===57){ p.fin=true; msg="飞回家啦！🎉"; }
@@ -53,6 +53,8 @@ function applyMove(color,idx,dice){
     const ti=(START[color]+p.step)%52;
     if(JUMP.has(ti)){ p.step=Math.min(50,p.step+4); msg="踩到跳格 +4！✨"; }
     else if(SKIP.has(ti)){ skip=true; msg="踩到暂停格，停一回合 ✋"; }
+    else if(LUCKY.has(ti)){ tileEffect='lucky'; pendingCard=true; msg+=" 幸运格 🍀！"; }
+    else if(TRAP.has(ti)){ tileEffect='trap'; pendingCard=true; msg+=" 陷阱格 💥！"; }
     // capture
     if(!isSafe(color,p.step)){
       const opp=color==="pink"?"blue":"pink";
@@ -62,10 +64,10 @@ function applyMove(color,idx,dice){
         }
       });
     }
-    // 心动格（仅情趣模式）
-    if(HEART.has(ti)){ pendingCard=true; msg+=" 心动格 💋！"; }
+    // 心动格
+    if(HEART.has(ti)){ tileEffect=tileEffect||'heart'; pendingCard=true; msg+=" 心动格 💋！"; }
   }
-  return {extra,skip,msg};
+  return {extra,skip,msg,tileEffect};
 }
 
 /* ---------- AI ---------- */
@@ -139,6 +141,8 @@ function renderBoard(){
         if(JUMP.has(ti)) d.classList.add('jump');
         if(SKIP.has(ti)) d.classList.add('skip');
         if(HEART.has(ti)) d.classList.add('heart');
+        if(LUCKY.has(ti)) d.classList.add('lucky');
+        if(TRAP.has(ti)) d.classList.add('trap');
       }
       // home columns
       if(HOME.pink.some(x=>x[0]===r&&x[1]===c)) d.classList.add('home','pinkH');
@@ -258,7 +262,8 @@ function doMove(color,idx){
     pendingCard=false;
     // 记录刚起飞的棋子，用于「拒绝」惩罚
     cardCtx={idx:idx, justLaunched:(before<0 && state.pieces[color][idx].step===0)};
-    setTimeout(()=>drawEventCard(color),650);
+    const tile=r.tileEffect;
+    setTimeout(()=>drawEventCard(color,tile),650);
     return; // 等玩家点「继续 / 拒绝」后再 endTurn
   }
   setTimeout(()=>endTurn(r.skip),700);
@@ -314,11 +319,17 @@ function pickCard(kind){
   const deck=CARDS[kind];
   return deck[Math.floor(Math.random()*deck.length)];
 }
-function drawEventCard(color){
+function drawEventCard(color, forcedKind){
   cardTurnSkip = state.skip[color] || false;
-  // 心动格触发：随机惩罚 / 奖励 / 心动 / 姿势
-  const r=Math.random();
-  const kind = r<0.40?'punish' : r<0.65?'reward' : r<0.85?'heart':'position';
+  // 根据格子类型决定抽卡池：
+  //  lucky(幸运)→奖励  trap(陷阱)→惩罚  heart(心动)→随机全部
+  let kind;
+  if(forcedKind==='lucky') kind='reward';
+  else if(forcedKind==='trap') kind='punish';
+  else {
+    const r=Math.random();
+    kind = r<0.35?'punish' : r<0.60?'reward' : r<0.80?'heart':'position';
+  }
   let emoji,title,text,tagName,tagCls;
   if(kind==='position'){
     const pos=POSITIONS[Math.floor(Math.random()*POSITIONS.length)];
@@ -339,7 +350,8 @@ function drawEventCard(color){
   tag.textContent=tagName; tag.className='event-tag '+tagCls;
   document.getElementById('eventReject').style.display='';
   document.getElementById('eventOverlay').classList.remove('hidden');
-  setMsg((color==='pink'?'你':'TA')+' 踩到心动格 💋 抽到一张'+tagName+'卡！');
+  const tileName = forcedKind==='lucky'?'幸运格 🍀':forcedKind==='trap'?'陷阱格 💥':'心动格 💋';
+  setMsg((color==='pink'?'你':'TA')+' 踩到'+tileName+' 抽到一张'+tagName+'卡！');
 }
 function closeEventCard(rejected){
   document.getElementById('eventOverlay').classList.add('hidden');
