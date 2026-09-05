@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#ff5c8a">
+<title>情侣飞行棋 · Love Flight Chess</title<style>
+:root{
+  --pink:#ff5c8a; --pink-d:#e63963; --pink-l:#ffd0dd;
+  --blue:#4d8dff; --blue-d:#2f6fe0; --blue-l:#cfe0ff;
+  --gold:#ffd24a; --ink:#4a3040; --bg1:#fff0f5; --bg2:#ffe3ee;
+  --cell: calc(100% / 15);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;margin:0;}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",Roboto,sans-serif;
+  color:var(--ink);
+  background:linear-gradient(160deg,var(--bg1),var(--bg2));
+  min-height:100%;display:flex;flex-direction:column;align-items:center;
+  padding:10px;overflow-x:hidden;
+}
+h1{font-size:clamp(20px,5vw,30px);margin:6px 0 2px;color:var(--pink-d);
+   letter-spacing:1px;text-shadow:0 1px 0 #fff;display:flex;align-items:center;gap:8px;}
+h1 .heart{animation:beat 1.2s infinite;}
+@keyframes beat{0%,100%{transform:scale(1);}10%{transform:scale(1.25);}20%{transform:scale(1);}30%{transform:scale(1.18);}40%{transform:scale(1);}}
+.sub{font-size:clamp(11px,2.6vw,13px);color:#b07a90;margin-bottom:8px;text-align:center;}
+
+/* score / status bar */
+.bar{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;
+     width:100%;max-width:520px;margin-bottom:8px;}
+.chip{background:#fff;border-radius:20px;padding:6px 14px;font-size:clamp(12px,3vw,14px);
+      box-shadow:0 2px 6px rgba(230,57,99,.15);display:flex;align-items:center;gap:6px;font-weight:600;}
+.chip .dot{width:14px;height:14px;border-radius:50%;display:inline-block;}
+.dot.pink{background:var(--pink);} .dot.blue{background:var(--blue);}
+.turnpink{outline:3px solid var(--pink);} .turnblue{outline:3px solid var(--blue);}
+
+/* board */
+.board-wrap{position:relative;width:min(94vw,66vh,520px);aspect-ratio:1;}
+.board{position:absolute;inset:0;display:grid;
+  grid-template-columns:repeat(15,1fr);grid-template-rows:repeat(15,1fr);
+  border-radius:14px;overflow:hidden;box-shadow:0 8px 24px rgba(230,57,99,.25);
+  background:#fff7fa;border:3px solid var(--pink-l);}
+.cell{position:relative;border:1px solid #ffe1ec;}
+.cell.red{background:var(--pink);}
+.cell.yellow{background:var(--blue);}
+.cell.blue{background:var(--blue);}
+.cell.green{background:var(--pink);}
+.cell.safe{background:#fff;box-shadow:inset 0 0 0 3px var(--gold);}
+.cell.safe::after{content:"★";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  color:var(--gold);font-size:clamp(9px,2.4vw,16px);}
+.cell.skip{background:repeating-linear-gradient(45deg,#fff,#fff 4px,#e9d7ff 4px,#e9d7ff 8px);}
+.cell.skip::after{content:"✋";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:clamp(8px,2.2vw,14px);}
+.cell.jump::after{content:"+4";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:700;font-size:clamp(7px,2vw,12px);text-shadow:0 1px 1px rgba(0,0,0,.3);}
+.cell.center{background:linear-gradient(135deg,var(--pink),var(--blue));}
+.cell.home{background:#fff;}
+.cell.home.pinkH{background:var(--pink-l);}
+.cell.home.blueH{background:var(--blue-l);}
+.cell .arrow{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:clamp(8px,2.2vw,14px);color:#fff;opacity:.85;}
+
+/* pieces */
+.pieces{position:absolute;inset:0;pointer-events:none;}
+.piece{position:absolute;width:calc(100%/15);height:calc(100%/15);
+  display:flex;align-items:center;justify-content:center;transition:left .35s ease,top .35s ease;z-index:5;}
+.piece .body{width:74%;height:74%;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:clamp(10px,2.6vw,18px);box-shadow:0 3px 6px rgba(0,0,0,.25);border:2px solid #fff;
+  pointer-events:auto;cursor:pointer;}
+.piece.pink .body{background:radial-gradient(circle at 32% 28%,#ff9bb8,var(--pink));color:#fff;}
+.piece.blue .body{background:radial-gradient(circle at 32% 28%,#8fbcff,var(--blue));color:#fff;}
+.piece.movable .body{animation:pulse 1s infinite;box-shadow:0 0 0 3px var(--gold),0 3px 6px rgba(0,0,0,.3);}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.12);}}
+.piece.fin .body{opacity:.9;}
+
+/* dock (spawn areas) */
+.dock{position:absolute;width:calc(100%/15*3);height:calc(100%/15*3);border-radius:12px;
+  display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;align-items:center;justify-items:center;
+  padding:6%;gap:2%;z-index:2;}
+.dock.pink{background:var(--pink-l);left:0;bottom:0;border:2px solid var(--pink);}
+.dock.blue{background:var(--blue-l);right:0;top:0;border:2px solid var(--blue);}
+.dock .slot{width:80%;height:80%;border-radius:50%;background:rgba(255,255,255,.6);}
+
+/* finish zone */
+.finish{position:absolute;width:calc(100%/15*3);height:calc(100%/15*3);z-index:1;
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  font-size:clamp(10px,2.4vw,15px);font-weight:700;color:#fff;padding:4px;line-height:1.1;}
+.finish.pinkF{left:0;top:0;background:var(--pink);border-radius:12px 0 12px 0;}
+.finish.blueF{right:0;bottom:0;background:var(--blue);border-radius:0 12px 0 12px;}
+
+/* controls */
+.controls{width:100%;max-width:520px;margin-top:10px;display:flex;flex-direction:column;align-items:center;gap:8px;}
+.dice-row{display:flex;align-items:center;gap:14px;}
+.dice{width:clamp(56px,16vw,72px);height:clamp(56px,16vw,72px);background:#fff;border-radius:14px;
+  box-shadow:0 4px 10px rgba(0,0,0,.18);display:grid;grid-template-columns:repeat(3,1fr);
+  grid-template-rows:repeat(3,1fr);padding:8px;border:2px solid var(--pink-l);}
+.dice.rolling{animation:shake .4s;}
+@keyframes shake{0%,100%{transform:rotate(0);}25%{transform:rotate(-18deg) scale(1.08);}75%{transform:rotate(18deg) scale(1.08);}}
+.pip{border-radius:50%;background:var(--pink-d);opacity:0;}
+.pip.on{opacity:1;}
+.btn{border:none;border-radius:24px;padding:12px 26px;font-size:clamp(14px,3.6vw,17px);font-weight:700;
+  color:#fff;background:linear-gradient(135deg,var(--pink),var(--pink-d));cursor:pointer;
+  box-shadow:0 4px 10px rgba(230,57,99,.35);transition:transform .1s;}
+.btn:active{transform:scale(.95);}
+.btn:disabled{background:#e0bccb;box-shadow:none;cursor:not-allowed;}
+.btn.blue{background:linear-gradient(135deg,var(--blue),var(--blue-d));box-shadow:0 4px 10px rgba(47,111,224,.35);}
+.msg{min-height:22px;font-size:clamp(13px,3.4vw,16px);font-weight:600;color:var(--pink-d);text-align:center;}
+
+/* overlay menus */
+.overlay{position:fixed;inset:0;background:rgba(74,48,64,.55);display:flex;align-items:center;justify-content:center;
+  z-index:50;padding:16px;backdrop-filter:blur(3px);}
+.overlay.hidden{display:none;}
+.card{background:#fff;border-radius:18px;padding:22px;max-width:380px;width:100%;text-align:center;
+  box-shadow:0 12px 30px rgba(0,0,0,.3);max-height:90vh;overflow:auto;}
+.card h2{margin:0 0 6px;color:var(--pink-d);}
+.card p{margin:6px 0;font-size:14px;color:#8a6070;}
+.diff-grid{display:grid;grid-template-columns:1fr;gap:8px;margin:14px 0;}
+.diff-btn{border:2px solid var(--pink-l);background:#fff;border-radius:12px;padding:10px;cursor:pointer;
+  text-align:left;transition:.15s;}
+.diff-btn:hover,.diff-btn.sel{border-color:var(--pink);background:#fff5f8;}
+.diff-btn .t{font-weight:700;color:var(--pink-d);font-size:15px;}
+.diff-btn .d{font-size:12px;color:#9a7080;}
+.legend{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:10px 0;font-size:12px;}
+.legend span{display:inline-flex;align-items:center;gap:4px;background:#fff5f8;border-radius:12px;padding:3px 8px;}
+.sw{width:14px;height:14px;border-radius:4px;display:inline-block;}
+.foot{margin-top:10px;font-size:11px;color:#b08a9a;}
+@media(min-width:760px){
+  .layout{display:flex;gap:18px;align-items:flex-start;justify-content:center;flex-wrap:wrap;}
+  .controls{max-width:280px;margin-top:0;}
+}
+</style>
+</head>
+<body>
+<h1><span class="heart">💗</span>情侣飞行棋<span class="heart">💗</span></h1>
+<div class="sub">掷骰 · 起飞 · 奔向彼此 ❤ 与 TA 一起飞回家</div>
+
+<div class="layout">
+  <div>
+    <div class="bar">
+      <div class="chip" id="chipPink"><span class="dot pink"></span>你 💗 <b id="scorePink">0/2</b></div>
+      <div class="chip" id="chipBlue"><span class="dot blue"></span>TA 💙 <b id="scoreBlue">0/2</b></div>
+    </div>
+    <div class="board-wrap" id="boardWrap">
+      <div class="board" id="board"></div>
+      <div class="dock pink" id="dockPink"><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div></div>
+      <div class="dock blue" id="dockBlue"><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div></div>
+      <div class="finish pinkF" id="finPink">💗<br>爱的<br>终点</div>
+      <div class="finish blueF" id="finBlue">💙<br>TA 的<br>终点</div>
+      <div class="pieces" id="pieces"></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="msg" id="msg">选择难度，开始游戏吧 💕</div>
+    <div class="dice-row">
+      <div class="dice" id="dice">
+        <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+        <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+        <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+      </div>
+    </div>
+    <button class="btn" id="rollBtn">🎲 掷骰子</button>
+    <button class="btn blue" id="menuBtn" style="padding:8px 18px;font-size:13px;">⚙️ 难度 / 重开</button>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--gold)"></i>安全格★</span>
+      <span><i class="sw" style="background:var(--pink)"></i>跳格+4</span>
+      <span><i class="sw" style="background:#e9d7ff"></i>暂停✋</span>
+    </div>
+    <div class="foot">手机 / 电脑 / Mac 浏览器直接玩 · 也可桌面安装</div>
+  </div>
+</div>
+
+<!-- start / difficulty menu -->
+<div class="overlay" id="menu">
+  <div class="card">
+    <h2>💗 选择难度</h2>
+    <p>你执粉 💗，TA 执蓝 💙。谁先把 2 颗棋飞回家谁赢~</p>
+    <div class="diff-grid" id="diffGrid"></div>
+    <button class="btn" id="startBtn">开始游戏 💕</button>
+  </div>
+</div>
+
+<!-- result -->
+<div class="overlay hidden" id="result">
+  <div class="card">
+    <h2 id="resultTitle">🎉</h2>
+    <p id="resultText"></p>
+    <button class="btn" id="againBtn">再玩一次 💗</button>
+  </div>
+</div>
+
+<script>
+/* ---------- board geometry ---------- */
+const N=15;
+function buildTrack(){
+  const t=[];
+  for(let c=1;c<=5;c++) t.push([6,c]);      // red start -> right  (51..)
+  for(let r=6;r<=8;r++) t.push([r,5]);      // up left column
+  for(let c=1;c<=5;c++) t.push([8,c]);      // bottom row left
+  for(let r=7;r<=8;r++) t.push([r,0]);      // left col lower
+  for(let c=0;c<=5;c++) t.push([14,c]);     // bottom row right
+  for(let r=8;r>=6;r--) t.push([r,5]);      // (dup guard) -- not used
+  return t;
+}
+// Build the 52-cell loop explicitly (row,col), clockwise from red start.
+const TRACK=[];
+// bottom arm: row6, col1..5
+for(let c=1;c<=5;c++) TRACK.push([6,c]);
+// left column up: row6..8 at col0 -- we go around the perimeter clockwise
+// Rebuild cleanly clockwise starting at red start (6,1):
+// Segment A: (6,1)->(6,5)        [bottom arm, top edge]  5 cells
+// Segment B: (7,5),(8,5)         [left col lower]        2
+// Segment C: (8,4)->(8,1)        [bottom row right->left]4
+// Segment D: (9,0),(10,0)...(14,0)[left col down]        6
+// Segment E: (14,1)->(14,5)      [bottom row]            5
+// Segment F: (14,6)...(14,8)     [right col lower]       3
+// Segment G: (13,9)...(9,9)      [bottom of top arm]     5
+// Segment H: (8,9),(8,8)         [right col upper]       2  -- careful
+// Let's instead use a known-correct coordinate list.
+const T=[
+ [6,1],[6,2],[6,3],[6,4],[6,5],
+ [7,5],[8,5],
+ [8,4],[8,3],[8,2],[8,1],
+ [9,0],[10,0],[11,0],[12,0],[13,0],[14,0],
+ [14,1],[14,2],[14,3],[14,4],[14,5],
+ [14,6],[14,7],[14,8],
+ [13,8],[12,8],[11,8],[10,8],[9,8],
+ [8,8],[8,9],
+ [8,10],[8,11],[8,12],[8,13],
+ [7,13],[6,13],
+ [6,12],[6,11],[6,10],[6,9],
+ [5,8],[4,8],[3,8],[2,8],[1,8],
+ [0,8],[0,7],[0,6],
+ [1,6],[2,6],[3,6],[4,6],[5,6]
+];
+// T.length should be 52
+const HOME={ pink:[], blue:[] };
+// pink home column: row7, col1..5 (enter after index 50)
+for(let c=1;c<=5;c++) HOME.pink.push([7,c]);
+// blue home column: col13? blue starts at index10 (14,8)-> moves up col8? define blue home col8 row1..5
+HOME.blue=[];
+for(let r=1;r<=5;r++) HOME.blue.push([r,8]);
+const START={pink:0, blue:10}; // T index where each color enters
+const HOMEENTRY={pink:51, blue:9}; // after this track index, piece goes to home column
+const SAFE=new Set([0,10,13,23,26,36,39,52]); // start cells + star corners
+const JUMP=new Set([3,16,29,42]);   // +4 jump cells (one per color region)
+const SKIP=new Set([7,20,33,46]);   // pause cells
+// finish center cells
+const FINISH_CELLS=[[6,6],[6,7],[6,8],[7,6],[7,7],[7,8],[8,6],[8,7],[8,8]];
+
+/* map a piece's logical step -> grid coord */
+function coordFor(color,step){
+  if(step<0) return null;            // in dock
+  if(step<=53){ const i=(START[color]+step)%55; return T[i]; }
+  if(step<=56){ return HOME[color][step-51]; }
+  return [7,7]; // finished (center)
+}
+
+/* ---------- game state ---------- */
+const DIFFS=[
+ {name:"① 懵懂小白",desc:"TA 随手乱走，纯靠运气 💭",ai:0},
+ {name:"② 心有灵犀",desc:"TA 偶尔会吃你的子 🌱",ai:1},
+ {name:"③ 默契搭档",desc:"TA 懂得躲危险、抢安全格 🌿",ai:2},
+ {name:"④ 心有千结",desc:"TA 会算收益，认真追你 🍂",ai:3},
+ {name:"⑤ 灵魂伴侣",desc:"TA 全程最优策略，超难 🥀",ai:4},
+];
+let state=null;
+
+function newGame(diff){
+  state={
+    diff,
+    turn:"pink",
+    dice:0,
+    rolling:false,
+    mustMove:false,
+    over:false,
+    skip:{pink:false,blue:false},
+    pieces:{
+      pink:[{step:-1,fin:false},{step:-1,fin:false}],
+      blue:[{step:-1,fin:false},{step:-1,fin:false}]
+    }
+  };
+  renderAll();
+  setMsg("你执粉 💗，先掷骰子开始~");
+}
+
+/* ---------- rules ---------- */
+function canEnter(color){ return true; } // rolling a 6 (or 1 on easy) enters
+function rollDie(){
+  // difficulty influences nothing about the die itself; pure chance
+  return 1+Math.floor(Math.random()*6);
+}
+function movablePieces(color,dice){
+  const ps=state.pieces[color],res=[];
+  ps.forEach((p,idx)=>{
+    if(p.fin) return;
+    if(p.step<0){
+      if(dice===6) res.push(idx);   // need a 6 to launch
+      return;
+    }
+    const ns=p.step+dice;
+    if(ns>57) return;              // overshoot not allowed
+    res.push(idx);
+  });
+  return res;
+}
+function isSafe(color,step){
+  if(step<0||step>50) return true;
+  const i=(START[color]+step)%52;
+  return SAFE.has(i);
+}
+function applyMove(color,idx,dice){
+  const p=state.pieces[color][idx];
+  let extra=0,skip=false,msg="";
+  if(p.step<0){ p.step=0; msg="起飞！💗"; }
+  else { p.step+=dice; }
+  if(p.step===57){ p.fin=true; msg="飞回家啦！🎉"; }
+  else if(p.step<=50){
+    const ti=(START[color]+p.step)%52;
+    if(JUMP.has(ti)){ p.step=Math.min(50,p.step+4); msg="踩到跳格 +4！✨"; }
+    else if(SKIP.has(ti)){ skip=true; msg="踩到暂停格，停一回合 ✋"; }
+    // capture
+    if(!isSafe(color,p.step)){
+      const opp=color==="pink"?"blue":"pink";
+      state.pieces[opp].forEach(q=>{
+        if(!q.fin && q.step>=0 && q.step<=50 && q.step===p.step){
+          q.step=-1; msg+=" 把 TA 送回家啦 💥";
+        }
+      });
+    }
+  }
+  return {extra,skip,msg};
+}
+
+/* ---------- AI ---------- */
+function aiChoose(color,dice,opts){
+  const ai=state.diff;
+  if(ai<=0) return opts[Math.floor(Math.random()*opts.length)];
+  const opp=color==="pink"?"blue":"pink";
+  let best=opts[0],bestScore=-1e9;
+  opts.forEach(idx=>{
+    const p=state.pieces[color][idx];
+    let s=0;
+    const ns=p.step<0?0:p.step+dice;
+    if(ns>57) return;
+    if(ns===57) s+=1000;                       // finishing is best
+    // capture value
+    if(ns<=50 && !isSafe(color,ns)){
+      state.pieces[opp].forEach(q=>{
+        if(!q.fin&&q.step===ns&&q.step>=0) s+=120;
+      });
+    }
+    // landing on safe / progress
+    if(isSafe(color,ns)) s+=25;
+    s+=ns;                                     // progress toward home
+    // avoid landing where opponent can hit
+    if(ns<=50 && !isSafe(color,ns)){
+      state.pieces[opp].forEach(q=>{
+        if(q.step>=0&&q.step<=50){
+          const dist=(q.step-ns+52)%52;
+          if(dist<=6) s-= (7-dist)*8;
+        }
+      });
+    }
+    // leaving dock is good early
+    if(p.step<0) s+=15;
+    if(ai>=3){ // higher levels look a bit ahead
+      s+=Math.random()* (5-ai); // less randomness at higher levels
+    }else{
+      s+=Math.random()*30;
+    }
+    if(s>bestScore){bestScore=s;best=idx;}
+  });
+  return best;
+}
+
+/* ---------- rendering ---------- */
+const boardEl=document.getElementById('board');
+const piecesEl=document.getElementById('pieces');
+function renderBoard(){
+  boardEl.innerHTML='';
+  for(let r=0;r<N;r++){
+    for(let c=0;c<N;c++){
+      const d=document.createElement('div');
+      d.className='cell';
+      // color regions
+      if(r>=6&&r<=8){
+        if(c>=6&&c<=8){ /* center */ }
+        else if(c<6 && r===7) d.classList.add('red');       // pink home col
+        else if(c>8 && r===7) d.classList.add('blue');      // blue home col
+      }
+      if(c>=6&&c<=8){
+        if(r<6 && c===7) d.classList.add('blue');
+        if(r>8 && c===7) d.classList.add('red');
+      }
+      // track coloring by which color's start region
+      const ti=T.findIndex(x=>x[0]===r&&x[1]===c);
+      if(ti>=0){
+        const owner=ti<13?'pink':ti<26?'blue':ti<39?'pink':'blue';
+        // color the 5-cell start streak
+        if(ti%13<5) d.classList.add(owner==='pink'?'red':'yellow');
+        if(SAFE.has(ti)) d.classList.add('safe');
+        if(JUMP.has(ti)) d.classList.add('jump');
+        if(SKIP.has(ti)) d.classList.add('skip');
+      }
+      // home columns
+      if(HOME.pink.some(x=>x[0]===r&&x[1]===c)) d.classList.add('home','pinkH');
+      if(HOME.blue.some(x=>x[0]===r&&x[1]===c)) d.classList.add('home','blueH');
+      // center
+      if(FINISH_CELLS.some(x=>x[0]===r&&x[1]===c)) d.classList.add('center');
+      boardEl.appendChild(d);
+    }
+  }
+}
+function cellRect(r,c){
+  const s=100/N;
+  return {left:c*s, top:r*s, w:s, h:s};
+}
+function renderPieces(){
+  piecesEl.innerHTML='';
+  ['pink','blue'].forEach(color=>{
+    state.pieces[color].forEach((p,idx)=>{
+      const el=document.createElement('div');
+      el.className='piece '+color;
+      let pos;
+      if(p.fin){ pos=cellRect(7,7); }
+      else if(p.step<0){
+        // dock slot
+        const dock=document.getElementById(color==='pink'?'dockPink':'dockBlue');
+        const dr=dock.getBoundingClientRect(), wr=document.getElementById('boardWrap').getBoundingClientRect();
+        pos={left:(dr.left-wr.left)+dr.width*(0.25+0.5*(idx%2)), top:(dr.top-wr.top)+dr.height*(0.25+0.5*Math.floor(idx/2)), w:dr.width*0.5, h:dr.height*0.5};
+      } else {
+        const [r,c]=coordFor(color,p.step);
+        const base=cellRect(r,c);
+        pos={left:base.left+base.w*(0.25+0.18*(idx%2)), top:base.top+base.h*(0.25+0.18*Math.floor(idx/2)), w:base.w*0.64, h:base.h*0.64};
+      }
+      el.style.left=pos.left+'%'; el.style.top=pos.top+'%';
+      el.style.width=pos.w+'%'; el.style.height=pos.h+'%';
+      const body=document.createElement('div');
+      body.className='body';
+      body.textContent=color==='pink'?'💗':'💙';
+      if(color===state.turn && state.mustMove && !state.over){
+        const opts=movablePieces(color,state.dice);
+        if(opts.includes(idx)){ el.classList.add('movable'); body.onclick=()=>onPieceClick(idx); }
+      }
+      if(p.fin) el.classList.add('fin');
+      el.appendChild(body);
+      piecesEl.appendChild(el);
+    });
+  });
+}
+function renderStatus(){
+  const fp=state.pieces.pink.filter(p=>p.fin).length;
+  const fb=state.pieces.blue.filter(p=>p.fin).length;
+  document.getElementById('scorePink').textContent=fp+'/2';
+  document.getElementById('scoreBlue').textContent=fb+'/2';
+  document.getElementById('chipPink').classList.toggle('turnpink',state.turn==='pink'&&!state.over);
+  document.getElementById('chipBlue').classList.toggle('turnblue',state.turn==='blue'&&!state.over);
+}
+function renderAll(){renderBoard();renderPieces();renderStatus();}
+
+/* dice */
+const PIPMAP={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
+function renderDice(v){
+  const pips=document.querySelectorAll('#dice .pip');
+  pips.forEach(p=>p.classList.remove('on'));
+  if(PIPMAP[v]) PIPMAP[v].forEach(i=>pips[i].classList.add('on'));
+}
+function setMsg(t){document.getElementById('msg').textContent=t;}
+
+/* ---------- flow ---------- */
+function roll(){
+  if(state.over||state.rolling) return;
+  if(state.mustMove) return;
+  // handle skip
+  if(state.skip[state.turn]){
+    state.skip[state.turn]=false;
+    setMsg((state.turn==='pink'?'你':'TA')+' 暂停一回合 ✋');
+    setTimeout(()=>{endTurn(false);},900);
+    return;
+  }
+  state.rolling=true;
+  const d=document.getElementById('dice');
+  d.classList.add('rolling');
+  let n=0;
+  const iv=setInterval(()=>{renderDice(1+Math.floor(Math.random()*6));n++;if(n>8){clearInterval(iv);d.classList.remove('rolling');finishRoll();}},60);
+}
+function finishRoll(){
+  const v=rollDie();
+  state.dice=v; renderDice(v); state.rolling=false;
+  const color=state.turn;
+  const opts=movablePieces(color,v);
+  if(opts.length===0){
+    setMsg((color==='pink'?'你':'TA')+' 掷到 '+v+'，没有可走的棋~');
+    setTimeout(()=>endTurn(true),800);
+    return;
+  }
+  state.mustMove=true;
+  if(color==='pink'){ setMsg('掷到 '+v+'！点一颗会发光的棋走一走 💗'); renderPieces(); }
+  else { setMsg('TA 掷到 '+v+'，思考中...'); setTimeout(aiMove,700); }
+}
+function onPieceClick(idx){
+  if(!state.mustMove||state.turn!=='pink'||state.over) return;
+  doMove('pink',idx);
+}
+function aiMove(){
+  if(state.over) return;
+  const opts=movablePieces('blue',state.dice);
+  const idx=aiChoose('blue',state.dice,opts);
+  doMove('blue',idx);
+}
+function doMove(color,idx){
+  const r=applyMove(color,idx,state.dice);
+  state.mustMove=false;
+  renderAll();
+  setMsg((color==='pink'?'你':'TA')+': '+r.msg);
+  // check win
+  if(state.pieces[color].every(p=>p.fin)){ endGame(color); return; }
+  setTimeout(()=>endTurn(r.skip),700);
+}
+function endTurn(skipped){
+  if(state.over) return;
+  if(skipped){ state.skip[state.turn]=true; }
+  state.turn=state.turn==='pink'?'blue':'pink';
+  state.mustMove=false; state.dice=0;
+  renderAll();
+  if(state.turn==='blue'){ setMsg('TA 的回合 💙'); setTimeout(roll,600); }
+  else { setMsg('你的回合 💗 掷骰子吧~'); }
+}
+function endGame(winner){
+  state.over=true; state.mustMove=false;
+  const win=winner==='pink';
+  document.getElementById('resultTitle').textContent=win?'💗 你赢啦！':'💙 TA 赢啦';
+  document.getElementById('resultText').textContent=win
+    ? '两颗心都飞回了家，爱情满满！再来一局？'
+    : '差一点点，TA 先到家~ 再试一次吧！';
+  document.getElementById('result').classList.remove('hidden');
+  renderAll();
+}
+
+/* ---------- menu ---------- */
+const diffGrid=document.getElementById('diffGrid');
+let selDiff=2;
+DIFFS.forEach((d,i)=>{
+  const b=document.createElement('div');
+  b.className='diff-btn'+(i===selDiff?' sel':'');
+  b.innerHTML='<div class="t">'+d.name+'</div><div class="d">'+d.desc+'</div>';
+  b.onclick=()=>{selDiff=i;[...diffGrid.children].forEach((c,j)=>c.classList.toggle('sel',j===i));};
+  diffGrid.appendChild(b);
+});
+document.getElementById('startBtn').onclick=()=>{
+  document.getElementById('menu').classList.add('hidden');
+  newGame(selDiff);
+};
+document.getElementById('againBtn').onclick=()=>{
+  document.getElementById('result').classList.add('hidden');
+  document.getElementById('menu').classList.remove('hidden');
+};
+document.getElementById('rollBtn').onclick=roll;
+document.getElementById('menuBtn').onclick=()=>{
+  document.getElementById('menu').classList.remove('hidden');
+};
+
+/* init */
+renderBoard(); renderDice(0);
+window.addEventListener('resize',()=>{if(state)renderPieces();});
+</script>
+</body>
+</html>
