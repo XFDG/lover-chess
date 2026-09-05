@@ -124,6 +124,53 @@ h1 .heart{animation:beat 1.2s infinite;}
 .legend span{display:inline-flex;align-items:center;gap:4px;background:#fff5f8;border-radius:12px;padding:3px 8px;}
 .sw{width:14px;height:14px;border-radius:4px;display:inline-block;}
 .foot{margin-top:10px;font-size:11px;color:#b08a9a;}
+
+/* ---------- R18 情趣主题 ---------- */
+body.r18{
+  --pink:#ff2e63; --pink-d:#c0003a; --pink-l:#5a2233;
+  --blue:#ff6b9d; --blue-d:#c0003a; --blue-l:#4a1a2a;
+  --gold:#ffd24a; --ink:#ffe3ec;
+  background:linear-gradient(160deg,#1a0a12,#2a0e1c 60%,#3a1224);
+}
+body.r18 h1{color:#ff5c8a;text-shadow:0 0 12px rgba(255,46,99,.5);}
+body.r18 .sub{color:#d98aa5;}
+body.r18 .chip{background:#2a0e1c;box-shadow:0 2px 10px rgba(255,46,99,.3);}
+body.r18 .chip.turnpink{box-shadow:0 0 0 3px var(--pink),0 0 14px rgba(255,46,99,.6);}
+body.r18 .chip.turnblue{box-shadow:0 0 0 3px var(--blue),0 0 14px rgba(255,107,157,.6);}
+body.r18 .cell.red{background:linear-gradient(135deg,#ff2e63,#c0003a);}
+body.r18 .cell.yellow{background:linear-gradient(135deg,#ff6b9d,#c0003a);}
+body.r18 .board{border-color:#5a2233;box-shadow:0 8px 30px rgba(255,46,99,.35);}
+body.r18 .dice{background:#2a0e1c;border-color:#5a2233;}
+body.r18 .pip{background:#ff2e63;}
+body.r18 .btn{box-shadow:0 4px 14px rgba(255,46,99,.5);}
+body.r18 .foot{color:#a86a80;}
+/* 心动格子 */
+.cell.heart::after{content:"💋";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:clamp(8px,2.2vw,14px);}
+
+/* ---------- 事件卡弹窗 ---------- */
+.card.event{border:2px solid var(--pink);}
+.card.event.r18card{background:linear-gradient(160deg,#2a0e1c,#3a1224);color:#ffe3ec;border-color:#ff2e63;}
+.card.event.r18card h2{color:#ff5c8a;}
+.card.event.r18card p{color:#f0b8c8;}
+.event-emoji{font-size:54px;margin:6px 0;animation:beat 1s infinite;}
+.event-tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 12px;border-radius:12px;margin-bottom:8px;}
+.tag-punish{background:#c0003a;color:#fff;}
+.tag-reward{background:#1f9d55;color:#fff;}
+.tag-heart{background:linear-gradient(135deg,#ff2e63,#ff6b9d);color:#fff;}
+.event-text{font-size:16px;font-weight:600;line-height:1.5;margin:10px 0;min-height:48px;}
+
+/* ---------- 年龄确认 ---------- */
+.agegate{position:fixed;inset:0;background:rgba(10,2,6,.92);display:flex;align-items:center;justify-content:center;
+  z-index:100;padding:16px;backdrop-filter:blur(4px);}
+.agegate.hidden{display:none;}
+.agebox{background:linear-gradient(160deg,#2a0e1c,#3a1224);border:2px solid #ff2e63;border-radius:18px;
+  padding:26px;max-width:380px;width:100%;text-align:center;box-shadow:0 0 40px rgba(255,46,99,.4);}
+.agebox .warn{font-size:40px;}
+.agebox h2{color:#ff5c8a;margin:8px 0;}
+.agebox p{color:#f0b8c8;font-size:13px;line-height:1.6;}
+.agebox .btnrow{display:flex;gap:10px;margin-top:16px;}
+.agebox .btn{flex:1;}
+.btn.no{background:#5a2233;box-shadow:none;}
 @media(min-width:760px){
   .layout{display:flex;gap:18px;align-items:flex-start;justify-content:center;flex-wrap:wrap;}
   .controls{max-width:280px;margin-top:0;}
@@ -132,7 +179,7 @@ h1 .heart{animation:beat 1.2s infinite;}
 </head>
 <body>
 <h1><span class="heart">💗</span>情侣飞行棋<span class="heart">💗</span></h1>
-<div class="sub">掷骰 · 起飞 · 奔向彼此 ❤ 与 TA 一起飞回家</div>
+<div class="sub" id="subTitle">掷骰 · 起飞 · 奔向彼此 ❤ 与 TA 一起飞回家</div>
 
 <div class="layout">
   <div>
@@ -161,6 +208,7 @@ h1 .heart{animation:beat 1.2s infinite;}
     </div>
     <button class="btn" id="rollBtn">🎲 掷骰子</button>
     <button class="btn blue" id="menuBtn" style="padding:8px 18px;font-size:13px;">⚙️ 难度 / 重开</button>
+    <button class="btn" id="themeBtn" style="padding:8px 18px;font-size:13px;background:linear-gradient(135deg,#ff2e63,#7a1f3d);">🔥 情趣模式</button>
     <div class="legend">
       <span><i class="sw" style="background:var(--gold)"></i>安全格★</span>
       <span><i class="sw" style="background:var(--pink)"></i>跳格+4</span>
@@ -186,6 +234,30 @@ h1 .heart{animation:beat 1.2s infinite;}
     <h2 id="resultTitle">🎉</h2>
     <p id="resultText"></p>
     <button class="btn" id="againBtn">再玩一次 💗</button>
+  </div>
+</div>
+
+<!-- 年龄确认（仅情趣模式） -->
+<div class="agegate hidden" id="ageGate">
+  <div class="agebox">
+    <div class="warn">🔞</div>
+    <h2>成人内容提示</h2>
+    <p>本「情趣模式」包含 18+ 的情侣惩罚 / 亲密互动内容，仅供<b>成年人在私密场合</b>娱乐使用。</p>
+    <p>请确认你已年满 18 周岁，且愿意继续。</p>
+    <div class="btnrow">
+      <button class="btn no" id="ageNo">我未满 18 / 退出</button>
+      <button class="btn" id="ageYes">我已满 18，继续</button>
+    </div>
+  </div>
+</div>
+
+<!-- 事件卡（惩罚 / 奖励 / 心动） -->
+<div class="overlay hidden" id="eventOverlay">
+  <div class="card event" id="eventCard">
+    <div class="event-emoji" id="eventEmoji">🎴</div>
+    <span class="event-tag" id="eventTag">惩罚</span>
+    <div class="event-text" id="eventText"></div>
+    <button class="btn" id="eventOk">接受，继续 💗</button>
   </div>
 </div>
 
@@ -245,6 +317,7 @@ const HOMEENTRY={pink:51, blue:9}; // after this track index, piece goes to home
 const SAFE=new Set([0,10,13,23,26,36,39,52]); // start cells + star corners
 const JUMP=new Set([3,16,29,42]);   // +4 jump cells (one per color region)
 const SKIP=new Set([7,20,33,46]);   // pause cells
+const HEART=new Set([1,14,27,40,53]); // 心动格（情趣模式触发事件卡）
 // finish center cells
 const FINISH_CELLS=[[6,6],[6,7],[6,8],[7,6],[7,7],[7,8],[8,6],[8,7],[8,8]];
 
@@ -328,6 +401,8 @@ function applyMove(color,idx,dice){
         }
       });
     }
+    // 心动格（仅情趣模式）
+    if(r18On && HEART.has(ti)){ pendingCard=true; msg+=" 心动格 💋！"; }
   }
   return {extra,skip,msg};
 }
@@ -402,6 +477,7 @@ function renderBoard(){
         if(SAFE.has(ti)) d.classList.add('safe');
         if(JUMP.has(ti)) d.classList.add('jump');
         if(SKIP.has(ti)) d.classList.add('skip');
+        if(HEART.has(ti)) d.classList.add('heart');
       }
       // home columns
       if(HOME.pink.some(x=>x[0]===r&&x[1]===c)) d.classList.add('home','pinkH');
@@ -516,6 +592,11 @@ function doMove(color,idx){
   setMsg((color==='pink'?'你':'TA')+': '+r.msg);
   // check win
   if(state.pieces[color].every(p=>p.fin)){ endGame(color); return; }
+  if(pendingCard){
+    pendingCard=false;
+    setTimeout(()=>drawEventCard(color),650);
+    return; // 等玩家点「继续」后再 endTurn
+  }
   setTimeout(()=>endTurn(r.skip),700);
 }
 function endTurn(skipped){
@@ -559,6 +640,145 @@ document.getElementById('againBtn').onclick=()=>{
 document.getElementById('rollBtn').onclick=roll;
 document.getElementById('menuBtn').onclick=()=>{
   document.getElementById('menu').classList.remove('hidden');
+};
+
+/* ---------- R18 情趣模式：事件卡 ---------- */
+const CARDS={
+  sweet:{
+    punish:[
+      ["🍫","喂 TA 吃一口巧克力，不许用手"],
+      ["💃","给 TA 表演 30 秒你最拿手的舞"],
+      ["📸","给 TA 拍一张美照，并发自夸一句"],
+      ["🎤","对 TA 大声说出今天最欣赏 TA 的一个点"],
+      ["🧘","模仿一种动物，让 TA 猜"],
+      ["💌","写一句情话念给 TA 听"],
+      ["🎵","清唱一句情歌给 TA"],
+      ["🤝","和 TA 十指相扣对视 10 秒不许笑"],
+      ["🍓","喂 TA 吃一颗草莓（或任意零食）"],
+      ["🌹","给 TA 一个 5 秒的拥抱"]
+    ],
+    reward:[
+      ["💋","在 TA 额头亲一下"],
+      ["🎁","TA 可以指定你做一个小家务"],
+      ["💆","帮 TA 按摩肩膀 30 秒"],
+      ["🍰","今晚的甜点由 TA 决定"],
+      ["🎬","选一部你们都想看的电影"],
+      ["☕","给 TA 冲一杯喜欢的饮料"]
+    ],
+    heart:[
+      ["💞","和 TA 分享一件你一直没说出口的心意"],
+      ["🌙","和 TA 约定一件最近想一起完成的事"],
+      ["💍","对 TA 说一句「如果我们在一个城市就好了」"],
+      ["🕯️","关掉灯，和 TA 安静待 1 分钟"],
+      ["💬","问 TA：最近有什么想让我陪你做的？"],
+      ["🌟","和 TA 一起想一个未来旅行的目的地"]
+    ]
+  },
+  r18:{
+    punish:[
+      ["🍑","隔着衣服挠 TA 痒 10 秒"],
+      ["🦶","给 TA 揉脚 30 秒"],
+      ["💦","用嘴喂 TA 喝一口水"],
+      ["🍆","隔着裤子握住 TA 的敏感部位 10 秒"],
+      ["🍑","揉 TA 的屁股 10 秒"],
+      ["🌊","和 TA 玩「不许笑不许动」挑战，输的人做 5 个深蹲"],
+      ["💦","用舌头在 TA 手心画个爱心"],
+      ["🔥","从耳根一路吻到锁骨"],
+      ["🍑","让 TA 跨坐在你腿上，从耳根吻到脖子"],
+      ["💦","含住 TA 的乳头 10 秒"],
+      ["🌊","解开 TA 一颗扣子，亲 TA 胸口 10 秒"],
+      ["🔥","从 TA 的小腹一路舔到大腿根"],
+      ["🍑","把 TA 翻过去，揉 TA 的屁股 10 秒"],
+      ["💦","让 TA 躺在你的身上，你隔着裤子握住 TA 的敏感部位 10 秒"],
+      ["🌊","和 TA 玩「用胸蹭 TA 的脸」挑战 10 秒"],
+      ["🔥","把 TA 的腿抬起来，从耳根舔到脚趾"],
+      ["🍑","从背后抱住 TA，隔着衣服揉 TA 的屁股 10 秒"],
+      ["💦","用胸夹住 TA 的敏感部位，上下摩擦 10 秒"],
+      ["🌊","把 TA 翻过去，隔着裤子握住 TA 的屁股 10 秒"],
+      ["🔥","让 TA 躺下，你跨坐在 TA 脸上 10 秒"],
+      ["🍑","把 TA 抱起来，隔着裤子握住 TA 的敏感部位 10 秒"],
+      ["💦","让 TA 躺在床上，你隔着衣服和 TA 接吻 10 秒"],
+      ["🌊","把 TA 的腿举起来，用胸夹住 TA 的敏感部位 10 秒"],
+      ["🔥","让 TA 跪着，你从背后抱住 TA 10 秒"],
+      ["🍑","把 TA 翻过去，隔着裤子揉 TA 的屁股 10 秒"]
+    ],
+    reward:[
+      ["💋","和 TA 舌吻 10 秒"],
+      ["🍑","隔着裤子握住 TA 的敏感部位 30 秒"],
+      ["🌊","让 TA 躺在你的身上，你隔着裤子握住 TA 的敏感部位 30 秒"],
+      ["🔥","把 TA 翻过去，从背后抱住 TA，隔着裤子握住 TA 的敏感部位 30 秒"],
+      ["💦","用胸夹住 TA 的敏感部位，上下摩擦 30 秒"],
+      ["🍑","把 TA 抱起来，让 TA 跨坐在你腿上 30 秒"],
+      ["🌊","让 TA 躺在床上，你跨坐在 TA 脸上 30 秒"],
+      ["🔥","把 TA 的腿举起来，从耳根一路舔到脚趾"],
+      ["💋","让 TA 跪着，你从背后抱住 TA，舌吻 30 秒"],
+      ["🍑","把 TA 翻过去，隔着裤子握住 TA 的屁股 30 秒"]
+    ],
+    heart:[
+      ["💞","和 TA 分享一件你一直没说出口的心意"],
+      ["🌙","和 TA 约定一件最近想一起完成的事"],
+      ["💍","对 TA 说一句「如果我们在一个城市就好了」"],
+      ["🕯️","关掉灯，和 TA 安静待 1 分钟"],
+      ["💬","问 TA：最近有什么想让我陪你做的？"],
+      ["🌟","和 TA 一起想一个未来旅行的目的地"],
+      ["🔥","和 TA 玩「谁先笑谁输」游戏，输的人今晚听 TA 的"],
+      ["💦","和 TA 约定一个属于你们的暗号，用来表达「我想要」"]
+    ]
+  }
+};
+let r18On=false;
+let pendingCard=false;
+function pickCard(kind){
+  const deck=CARDS[r18On?'r18':'sweet'][kind];
+  return deck[Math.floor(Math.random()*deck.length)];
+}
+function drawEventCard(color){
+  cardTurnSkip = state.skip[color] || false;
+  // 心动格触发：随机惩罚/奖励/心动
+  const r=Math.random();
+  const kind = r<0.5?'punish' : r<0.8?'reward':'heart';
+  const [emoji,text]=pickCard(kind);
+  const tagMap={punish:['惩罚','tag-punish'],reward:['奖励','tag-reward'],heart:['心动','tag-heart']};
+  const [tagName,tagCls]=tagMap[kind];
+  const card=document.getElementById('eventCard');
+  card.classList.toggle('r18card',r18On);
+  document.getElementById('eventEmoji').textContent=emoji;
+  const tag=document.getElementById('eventTag');
+  tag.textContent=tagName; tag.className='event-tag '+tagCls;
+  document.getElementById('eventText').textContent=text;
+  document.getElementById('eventOverlay').classList.remove('hidden');
+  setMsg((color==='pink'?'你':'TA')+' 踩到心动格 💋 抽到一张'+tagName+'卡！');
+}
+document.getElementById('eventOk').onclick=()=>{
+  document.getElementById('eventOverlay').classList.add('hidden');
+  const skip=cardTurnSkip; cardTurnSkip=false;
+  const color=state.turn;
+  setTimeout(()=>endTurn(skip),300);
+};
+
+/* 主题切换 + 年龄确认 */
+document.getElementById('themeBtn').onclick=()=>{
+  if(!r18On){
+    document.getElementById('ageGate').classList.remove('hidden');
+  }else{
+    setTheme(false);
+  }
+};
+function setTheme(on){
+  r18On=on;
+  document.body.classList.toggle('r18',on);
+  document.getElementById('themeBtn').textContent = on?'💗 清新模式':'🔥 情趣模式';
+  document.getElementById('subTitle').textContent = on
+    ? '掷骰 · 心动 · 大冒险 🔞 仅供成年人私密娱乐'
+    : '掷骰 · 起飞 · 奔向彼此 ❤ 与 TA 一起飞回家';
+  if(state){ state.pieces.pink.forEach(p=>{}); renderPieces(); }
+}
+document.getElementById('ageYes').onclick=()=>{
+  document.getElementById('ageGate').classList.add('hidden');
+  setTheme(true);
+};
+document.getElementById('ageNo').onclick=()=>{
+  document.getElementById('ageGate').classList.add('hidden');
 };
 
 /* init */
