@@ -67,19 +67,24 @@
   </div>
 </div>
 
-<!-- 事件卡（惩罚 / 奖励 / 心动） -->
+<!-- 事件卡（惩罚 / 奖励 / 心动 / 姿势） -->
 <div class="overlay hidden" id="eventOverlay">
   <div class="card event" id="eventCard">
     <div class="event-emoji" id="eventEmoji">🎴</div>
     <span class="event-tag" id="eventTag">惩罚</span>
+    <div class="event-title" id="eventTitle"></div>
     <div class="event-text" id="eventText"></div>
-    <button class="btn" id="eventOk">接受，继续 💗</button>
+    <div class="btnrow">
+      <button class="btn no" id="eventReject">拒绝（倒退1~3格）</button>
+      <button class="btn" id="eventOk">接受，继续 💗</button>
+    </div>
   </div>
 </div>
 
-<!-- 模块加载顺序：config → cards → game -->
+<!-- 模块加载顺序：config → cards → positions → game -->
 <script src="src/js/config.js"></script>
 <script src="src/data/cards.js"></script>
+<script src="src/data/positions.js"></script>
 <script src="src/js/game.js"></script>
 </body>
 </html>

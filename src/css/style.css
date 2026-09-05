@@ -151,6 +151,13 @@ h1{color:#ff5c8a;text-shadow:0 0 12px rgba(255,46,99,.5);}
 .tag-reward{background:#1f9d55;color:#fff;}
 .tag-heart{background:linear-gradient(135deg,#ff2e63,#ff6b9d);color:#fff;}
 .event-text{font-size:16px;font-weight:600;line-height:1.5;margin:10px 0;min-height:48px;}
+.event-title{font-size:22px;font-weight:800;margin:4px 0 2px;color:var(--pink-d);}
+.tag-position{background:linear-gradient(135deg,#ff2e63,#ffd24a);color:#fff;}
+.btnrow{display:flex;gap:10px;margin-top:12px;}
+.btnrow .btn{flex:1;padding:10px 8px;font-size:14px;}
+/* 卡片弹出动画 */
+#eventOverlay .card{animation:cardIn .3s ease;}
+@keyframes cardIn{from{transform:scale(.85);opacity:0;}to{transform:scale(1);opacity:1;}}
 
 @media(min-width:760px){
   .layout{display:flex;gap:18px;align-items:flex-start;justify-content:center;flex-wrap:wrap;}

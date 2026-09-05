@@ -247,6 +247,7 @@ function aiMove(){
   doMove('blue',idx);
 }
 function doMove(color,idx){
+  const before=state.pieces[color][idx].step;
   const r=applyMove(color,idx,state.dice);
   state.mustMove=false;
   renderAll();
@@ -255,8 +256,10 @@ function doMove(color,idx){
   if(state.pieces[color].every(p=>p.fin)){ endGame(color); return; }
   if(pendingCard){
     pendingCard=false;
+    // 记录刚起飞的棋子，用于「拒绝」惩罚
+    cardCtx={idx:idx, justLaunched:(before<0 && state.pieces[color][idx].step===0)};
     setTimeout(()=>drawEventCard(color),650);
-    return; // 等玩家点「继续」后再 endTurn
+    return; // 等玩家点「继续 / 拒绝」后再 endTurn
   }
   setTimeout(()=>endTurn(r.skip),700);
 }
@@ -305,32 +308,55 @@ document.getElementById('menuBtn').onclick=()=>{
 
 /* ---------- R18 情趣模式：事件卡（仅成人模式） ---------- */
 let pendingCard=false;
+let cardTurnSkip=false;       // 踩卡前该颜色是否已处于 skip
+let cardCtx=null;             // 当前卡片上下文，用于「拒绝」惩罚
 function pickCard(kind){
   const deck=CARDS[kind];
   return deck[Math.floor(Math.random()*deck.length)];
 }
 function drawEventCard(color){
   cardTurnSkip = state.skip[color] || false;
-  // 心动格触发：随机惩罚/奖励/心动
+  // 心动格触发：随机惩罚 / 奖励 / 心动 / 姿势
   const r=Math.random();
-  const kind = r<0.5?'punish' : r<0.8?'reward':'heart';
-  const [emoji,text]=pickCard(kind);
-  const tagMap={punish:['惩罚','tag-punish'],reward:['奖励','tag-reward'],heart:['心动','tag-heart']};
-  const [tagName,tagCls]=tagMap[kind];
+  const kind = r<0.40?'punish' : r<0.65?'reward' : r<0.85?'heart':'position';
+  let emoji,title,text,tagName,tagCls;
+  if(kind==='position'){
+    const pos=POSITIONS[Math.floor(Math.random()*POSITIONS.length)];
+    emoji='💋'; title=pos[0]; text=pos[1];
+    tagName='姿势'; tagCls='tag-position';
+  }else{
+    const picked=pickCard(kind);
+    emoji=picked[0]; text=picked[1];
+    const tagMap={punish:['惩罚','tag-punish'],reward:['奖励','tag-reward'],heart:['心动','tag-heart']};
+    tagName=tagMap[kind][0]; tagCls=tagMap[kind][1];
+  }
   const card=document.getElementById('eventCard');
+  card.classList.remove('flipped');
   document.getElementById('eventEmoji').textContent=emoji;
+  document.getElementById('eventTitle').textContent=title;
+  document.getElementById('eventText').textContent=text;
   const tag=document.getElementById('eventTag');
   tag.textContent=tagName; tag.className='event-tag '+tagCls;
-  document.getElementById('eventText').textContent=text;
+  document.getElementById('eventReject').style.display='';
   document.getElementById('eventOverlay').classList.remove('hidden');
   setMsg((color==='pink'?'你':'TA')+' 踩到心动格 💋 抽到一张'+tagName+'卡！');
 }
-document.getElementById('eventOk').onclick=()=>{
+function closeEventCard(rejected){
   document.getElementById('eventOverlay').classList.add('hidden');
+  const ctx=cardCtx; cardCtx=null;
   const skip=cardTurnSkip; cardTurnSkip=false;
   const color=state.turn;
+  if(rejected && ctx){
+    // 拒绝惩罚：刚起飞的棋回停机坪；否则倒退 1~3 格
+    const p=state.pieces[color][ctx.idx];
+    if(ctx.justLaunched){ p.step=-1; }
+    else if(p.step>=0){ p.step=Math.max(0,p.step-Math.floor(1+Math.random()*3)); }
+    renderAll();
+  }
   setTimeout(()=>endTurn(skip),300);
-};
+}
+document.getElementById('eventOk').onclick=()=>closeEventCard(false);
+document.getElementById('eventReject').onclick=()=>closeEventCard(true);
 
 /* init */
 renderBoard(); renderDice(0);
