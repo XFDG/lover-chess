@@ -125,25 +125,25 @@ h1 .heart{animation:beat 1.2s infinite;}
 .sw{width:14px;height:14px;border-radius:4px;display:inline-block;}
 .foot{margin-top:10px;font-size:11px;color:#b08a9a;}
 
-/* ---------- R18 情趣主题 ---------- */
-body.r18{
+/* ---------- R18 情趣主题（默认） ---------- */
+body{
   --pink:#ff2e63; --pink-d:#c0003a; --pink-l:#5a2233;
   --blue:#ff6b9d; --blue-d:#c0003a; --blue-l:#4a1a2a;
   --gold:#ffd24a; --ink:#ffe3ec;
   background:linear-gradient(160deg,#1a0a12,#2a0e1c 60%,#3a1224);
 }
-body.r18 h1{color:#ff5c8a;text-shadow:0 0 12px rgba(255,46,99,.5);}
-body.r18 .sub{color:#d98aa5;}
-body.r18 .chip{background:#2a0e1c;box-shadow:0 2px 10px rgba(255,46,99,.3);}
-body.r18 .chip.turnpink{box-shadow:0 0 0 3px var(--pink),0 0 14px rgba(255,46,99,.6);}
-body.r18 .chip.turnblue{box-shadow:0 0 0 3px var(--blue),0 0 14px rgba(255,107,157,.6);}
-body.r18 .cell.red{background:linear-gradient(135deg,#ff2e63,#c0003a);}
-body.r18 .cell.yellow{background:linear-gradient(135deg,#ff6b9d,#c0003a);}
-body.r18 .board{border-color:#5a2233;box-shadow:0 8px 30px rgba(255,46,99,.35);}
-body.r18 .dice{background:#2a0e1c;border-color:#5a2233;}
-body.r18 .pip{background:#ff2e63;}
-body.r18 .btn{box-shadow:0 4px 14px rgba(255,46,99,.5);}
-body.r18 .foot{color:#a86a80;}
+h1{color:#ff5c8a;text-shadow:0 0 12px rgba(255,46,99,.5);}
+.sub{color:#d98aa5;}
+.chip{background:#2a0e1c;box-shadow:0 2px 10px rgba(255,46,99,.3);}
+.chip.turnpink{box-shadow:0 0 0 3px var(--pink),0 0 14px rgba(255,46,99,.6);}
+.chip.turnblue{box-shadow:0 0 0 3px var(--blue),0 0 14px rgba(255,107,157,.6);}
+.cell.red{background:linear-gradient(135deg,#ff2e63,#c0003a);}
+.cell.yellow{background:linear-gradient(135deg,#ff6b9d,#c0003a);}
+.board{border-color:#5a2233;box-shadow:0 8px 30px rgba(255,46,99,.35);}
+.dice{background:#2a0e1c;border-color:#5a2233;}
+.pip{background:#ff2e63;}
+.btn{box-shadow:0 4px 14px rgba(255,46,99,.5);}
+.foot{color:#a86a80;}
 /* 心动格子 */
 .cell.heart::after{content:"💋";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:clamp(8px,2.2vw,14px);}
 
@@ -159,18 +159,6 @@ body.r18 .foot{color:#a86a80;}
 .tag-heart{background:linear-gradient(135deg,#ff2e63,#ff6b9d);color:#fff;}
 .event-text{font-size:16px;font-weight:600;line-height:1.5;margin:10px 0;min-height:48px;}
 
-/* ---------- 年龄确认 ---------- */
-.agegate{position:fixed;inset:0;background:rgba(10,2,6,.92);display:flex;align-items:center;justify-content:center;
-  z-index:100;padding:16px;backdrop-filter:blur(4px);}
-.agegate.hidden{display:none;}
-.agebox{background:linear-gradient(160deg,#2a0e1c,#3a1224);border:2px solid #ff2e63;border-radius:18px;
-  padding:26px;max-width:380px;width:100%;text-align:center;box-shadow:0 0 40px rgba(255,46,99,.4);}
-.agebox .warn{font-size:40px;}
-.agebox h2{color:#ff5c8a;margin:8px 0;}
-.agebox p{color:#f0b8c8;font-size:13px;line-height:1.6;}
-.agebox .btnrow{display:flex;gap:10px;margin-top:16px;}
-.agebox .btn{flex:1;}
-.btn.no{background:#5a2233;box-shadow:none;}
 @media(min-width:760px){
   .layout{display:flex;gap:18px;align-items:flex-start;justify-content:center;flex-wrap:wrap;}
   .controls{max-width:280px;margin-top:0;}
@@ -208,7 +196,6 @@ body.r18 .foot{color:#a86a80;}
     </div>
     <button class="btn" id="rollBtn">🎲 掷骰子</button>
     <button class="btn blue" id="menuBtn" style="padding:8px 18px;font-size:13px;">⚙️ 难度 / 重开</button>
-    <button class="btn" id="themeBtn" style="padding:8px 18px;font-size:13px;background:linear-gradient(135deg,#ff2e63,#7a1f3d);">🔥 情趣模式</button>
     <div class="legend">
       <span><i class="sw" style="background:var(--gold)"></i>安全格★</span>
       <span><i class="sw" style="background:var(--pink)"></i>跳格+4</span>
@@ -234,20 +221,6 @@ body.r18 .foot{color:#a86a80;}
     <h2 id="resultTitle">🎉</h2>
     <p id="resultText"></p>
     <button class="btn" id="againBtn">再玩一次 💗</button>
-  </div>
-</div>
-
-<!-- 年龄确认（仅情趣模式） -->
-<div class="agegate hidden" id="ageGate">
-  <div class="agebox">
-    <div class="warn">🔞</div>
-    <h2>成人内容提示</h2>
-    <p>本「情趣模式」包含 18+ 的情侣惩罚 / 亲密互动内容，仅供<b>成年人在私密场合</b>娱乐使用。</p>
-    <p>请确认你已年满 18 周岁，且愿意继续。</p>
-    <div class="btnrow">
-      <button class="btn no" id="ageNo">我未满 18 / 退出</button>
-      <button class="btn" id="ageYes">我已满 18，继续</button>
-    </div>
   </div>
 </div>
 
@@ -402,7 +375,7 @@ function applyMove(color,idx,dice){
       });
     }
     // 心动格（仅情趣模式）
-    if(r18On && HEART.has(ti)){ pendingCard=true; msg+=" 心动格 💋！"; }
+    if(HEART.has(ti)){ pendingCard=true; msg+=" 心动格 💋！"; }
   }
   return {extra,skip,msg};
 }
@@ -642,94 +615,111 @@ document.getElementById('menuBtn').onclick=()=>{
   document.getElementById('menu').classList.remove('hidden');
 };
 
-/* ---------- R18 情趣模式：事件卡 ---------- */
+/* ---------- R18 情趣模式：事件卡（仅成人模式） ---------- */
 const CARDS={
-  sweet:{
-    punish:[
-      ["🍫","喂 TA 吃一口巧克力，不许用手"],
-      ["💃","给 TA 表演 30 秒你最拿手的舞"],
-      ["📸","给 TA 拍一张美照，并发自夸一句"],
-      ["🎤","对 TA 大声说出今天最欣赏 TA 的一个点"],
-      ["🧘","模仿一种动物，让 TA 猜"],
-      ["💌","写一句情话念给 TA 听"],
-      ["🎵","清唱一句情歌给 TA"],
-      ["🤝","和 TA 十指相扣对视 10 秒不许笑"],
-      ["🍓","喂 TA 吃一颗草莓（或任意零食）"],
-      ["🌹","给 TA 一个 5 秒的拥抱"]
-    ],
-    reward:[
-      ["💋","在 TA 额头亲一下"],
-      ["🎁","TA 可以指定你做一个小家务"],
-      ["💆","帮 TA 按摩肩膀 30 秒"],
-      ["🍰","今晚的甜点由 TA 决定"],
-      ["🎬","选一部你们都想看的电影"],
-      ["☕","给 TA 冲一杯喜欢的饮料"]
-    ],
-    heart:[
-      ["💞","和 TA 分享一件你一直没说出口的心意"],
-      ["🌙","和 TA 约定一件最近想一起完成的事"],
-      ["💍","对 TA 说一句「如果我们在一个城市就好了」"],
-      ["🕯️","关掉灯，和 TA 安静待 1 分钟"],
-      ["💬","问 TA：最近有什么想让我陪你做的？"],
-      ["🌟","和 TA 一起想一个未来旅行的目的地"]
-    ]
-  },
-  r18:{
-    punish:[
-      ["🍑","隔着衣服挠 TA 痒 10 秒"],
-      ["🦶","给 TA 揉脚 30 秒"],
-      ["💦","用嘴喂 TA 喝一口水"],
-      ["🍆","隔着裤子握住 TA 的敏感部位 10 秒"],
-      ["🍑","揉 TA 的屁股 10 秒"],
-      ["🌊","和 TA 玩「不许笑不许动」挑战，输的人做 5 个深蹲"],
-      ["💦","用舌头在 TA 手心画个爱心"],
-      ["🔥","从耳根一路吻到锁骨"],
-      ["🍑","让 TA 跨坐在你腿上，从耳根吻到脖子"],
-      ["💦","含住 TA 的乳头 10 秒"],
-      ["🌊","解开 TA 一颗扣子，亲 TA 胸口 10 秒"],
-      ["🔥","从 TA 的小腹一路舔到大腿根"],
-      ["🍑","把 TA 翻过去，揉 TA 的屁股 10 秒"],
-      ["💦","让 TA 躺在你的身上，你隔着裤子握住 TA 的敏感部位 10 秒"],
-      ["🌊","和 TA 玩「用胸蹭 TA 的脸」挑战 10 秒"],
-      ["🔥","把 TA 的腿抬起来，从耳根舔到脚趾"],
-      ["🍑","从背后抱住 TA，隔着衣服揉 TA 的屁股 10 秒"],
-      ["💦","用胸夹住 TA 的敏感部位，上下摩擦 10 秒"],
-      ["🌊","把 TA 翻过去，隔着裤子握住 TA 的屁股 10 秒"],
-      ["🔥","让 TA 躺下，你跨坐在 TA 脸上 10 秒"],
-      ["🍑","把 TA 抱起来，隔着裤子握住 TA 的敏感部位 10 秒"],
-      ["💦","让 TA 躺在床上，你隔着衣服和 TA 接吻 10 秒"],
-      ["🌊","把 TA 的腿举起来，用胸夹住 TA 的敏感部位 10 秒"],
-      ["🔥","让 TA 跪着，你从背后抱住 TA 10 秒"],
-      ["🍑","把 TA 翻过去，隔着裤子揉 TA 的屁股 10 秒"]
-    ],
-    reward:[
-      ["💋","和 TA 舌吻 10 秒"],
-      ["🍑","隔着裤子握住 TA 的敏感部位 30 秒"],
-      ["🌊","让 TA 躺在你的身上，你隔着裤子握住 TA 的敏感部位 30 秒"],
-      ["🔥","把 TA 翻过去，从背后抱住 TA，隔着裤子握住 TA 的敏感部位 30 秒"],
-      ["💦","用胸夹住 TA 的敏感部位，上下摩擦 30 秒"],
-      ["🍑","把 TA 抱起来，让 TA 跨坐在你腿上 30 秒"],
-      ["🌊","让 TA 躺在床上，你跨坐在 TA 脸上 30 秒"],
-      ["🔥","把 TA 的腿举起来，从耳根一路舔到脚趾"],
-      ["💋","让 TA 跪着，你从背后抱住 TA，舌吻 30 秒"],
-      ["🍑","把 TA 翻过去，隔着裤子握住 TA 的屁股 30 秒"]
-    ],
-    heart:[
-      ["💞","和 TA 分享一件你一直没说出口的心意"],
-      ["🌙","和 TA 约定一件最近想一起完成的事"],
-      ["💍","对 TA 说一句「如果我们在一个城市就好了」"],
-      ["🕯️","关掉灯，和 TA 安静待 1 分钟"],
-      ["💬","问 TA：最近有什么想让我陪你做的？"],
-      ["🌟","和 TA 一起想一个未来旅行的目的地"],
-      ["🔥","和 TA 玩「谁先笑谁输」游戏，输的人今晚听 TA 的"],
-      ["💦","和 TA 约定一个属于你们的暗号，用来表达「我想要」"]
-    ]
-  }
+  punish:[
+    ["🍑","隔着衣服挠 TA 痒 10 秒"],
+    ["🦶","给 TA 揉脚 30 秒"],
+    ["💦","用嘴喂 TA 喝一口水"],
+    ["🍆","隔着裤子握住 TA 的敏感部位 10 秒"],
+    ["🍑","揉 TA 的屁股 10 秒"],
+    ["🌊","和 TA 玩「不许笑不许动」挑战，输的人做 5 个深蹲"],
+    ["💦","用舌头在 TA 手心画个爱心"],
+    ["🔥","从耳根一路吻到锁骨"],
+    ["🍑","让 TA 跨坐在你腿上，从耳根吻到脖子"],
+    ["💦","含住 TA 的乳头 10 秒"],
+    ["🌊","解开 TA 一颗扣子，亲 TA 胸口 10 秒"],
+    ["🔥","从 TA 的小腹一路舔到大腿根"],
+    ["🍑","把 TA 翻过去，揉 TA 的屁股 10 秒"],
+    ["💦","让 TA 躺在你的身上，你隔着裤子握住 TA 的敏感部位 10 秒"],
+    ["🌊","和 TA 玩「用胸蹭 TA 的脸」挑战 10 秒"],
+    ["🔥","把 TA 的腿抬起来，从耳根舔到脚趾"],
+    ["🍑","从背后抱住 TA，隔着衣服揉 TA 的屁股 10 秒"],
+    ["💦","用胸夹住 TA 的敏感部位，上下摩擦 10 秒"],
+    ["🌊","把 TA 翻过去，隔着裤子握住 TA 的屁股 10 秒"],
+    ["🔥","让 TA 躺下，你跨坐在 TA 脸上 10 秒"],
+    ["🍑","把 TA 抱起来，隔着裤子握住 TA 的敏感部位 10 秒"],
+    ["💦","让 TA 躺在床上，你隔着衣服和 TA 接吻 10 秒"],
+    ["🌊","把 TA 的腿举起来，用胸夹住 TA 的敏感部位 10 秒"],
+    ["🔥","让 TA 跪着，你从背后抱住 TA 10 秒"],
+    ["🍑","把 TA 翻过去，隔着裤子揉 TA 的屁股 10 秒"],
+    ["💦","把 TA 的双手绑在背后，从耳根一路吻到小腹"],
+    ["🔥","让 TA 闭上眼睛，你隔着衣服慢慢抚摸 TA 全身 30 秒"],
+    ["🍑","从背后抱住 TA，把 TA 的腿抬起来，隔着裤子握住 TA 的敏感部位 15 秒"],
+    ["💦","让 TA 躺下，你跨坐在 TA 脸上，用胸夹住 TA 的脸 15 秒"],
+    ["🌊","把 TA 翻过去，从背后舔 TA 的脖子 20 秒"],
+    ["🔥","让 TA 跪着，你从背后抱住 TA，隔着裤子握住 TA 的敏感部位 15 秒"],
+    ["🍑","把 TA 抱起来，让 TA 跨坐在你腿上，从耳根吻到脖子 20 秒"],
+    ["💦","让 TA 躺在床上，你隔着衣服和 TA 舌吻 20 秒"],
+    ["🌊","把 TA 的腿举起来，从 TA 的脚趾一路舔到大腿根"],
+    ["🔥","让 TA 躺下，你跨坐在 TA 肚子上，隔着裤子握住 TA 的敏感部位 15 秒"],
+    ["🍑","从背后抱住 TA，把 TA 翻过去，隔着裤子揉 TA 的屁股 15 秒"],
+    ["💦","让 TA 跪着，你从背后抱住 TA，用胸夹住 TA 的屁股 15 秒"],
+    ["🌊","把 TA 翻过去，从背后舔 TA 的屁股 15 秒"],
+    ["🔥","让 TA 躺下，你跨坐在 TA 脸上 15 秒，用胸夹住 TA 的脸"],
+    ["🍑","把 TA 抱起来，让 TA 跨坐在你腿上，隔着裤子握住 TA 的敏感部位 15 秒"],
+    ["💦","让 TA 躺在床上，你隔着衣服和 TA 接吻，同时隔着裤子握住 TA 的敏感部位 15 秒"],
+    ["🌊","把 TA 的腿举起来，用胸夹住 TA 的敏感部位 15 秒"],
+    ["🔥","让 TA 跪着，你从背后抱住 TA，从耳根一路吻到脚趾"],
+    ["🍑","把 TA 翻过去，隔着裤子握住 TA 的屁股，同时从背后舔 TA 的脖子 15 秒"],
+    ["💦","让 TA 躺下，你跨坐在 TA 肚子上，用胸夹住 TA 的敏感部位 15 秒"],
+    ["🌊","把 TA 的腿举起来，从背后舔 TA 的大腿根 20 秒"],
+    ["🔥","让 TA 跪着，你从背后抱住 TA，隔着裤子握住 TA 的敏感部位，同时用胸夹住 TA 的屁股 15 秒"],
+    ["🍑","把 TA 抱起来，让 TA 跨坐在你腿上，从背后抱住 TA，隔着裤子握住 TA 的敏感部位 15 秒"]
+  ],
+  reward:[
+    ["💋","和 TA 舌吻 10 秒"],
+    ["🍑","隔着裤子握住 TA 的敏感部位 30 秒"],
+    ["🌊","让 TA 躺在你的身上，你隔着裤子握住 TA 的敏感部位 30 秒"],
+    ["🔥","把 TA 翻过去，从背后抱住 TA，隔着裤子握住 TA 的敏感部位 30 秒"],
+    ["💦","用胸夹住 TA 的敏感部位，上下摩擦 30 秒"],
+    ["🍑","把 TA 抱起来，让 TA 跨坐在你腿上 30 秒"],
+    ["🌊","让 TA 躺在床上，你跨坐在 TA 脸上 30 秒"],
+    ["🔥","把 TA 的腿举起来，从耳根一路舔到脚趾"],
+    ["💋","让 TA 跪着，你从背后抱住 TA，舌吻 30 秒"],
+    ["🍑","把 TA 翻过去，隔着裤子握住 TA 的屁股 30 秒"],
+    ["💦","让 TA 躺下，你跨坐在 TA 肚子上，隔着裤子握住 TA 的敏感部位 30 秒"],
+    ["🌊","把 TA 的腿举起来，用胸夹住 TA 的敏感部位 30 秒"],
+    ["🔥","让 TA 跪着，你从背后抱住 TA，从耳根一路吻到脚趾"],
+    ["🍑","把 TA 翻过去，隔着裤子握住 TA 的屁股，同时从背后舔 TA 的脖子 30 秒"],
+    ["💦","让 TA 躺下，你跨坐在 TA 肚子上，用胸夹住 TA 的敏感部位 30 秒"],
+    ["🌊","把 TA 的腿举起来，从背后舔 TA 的大腿根 30 秒"],
+    ["🔥","让 TA 跪着，你从背后抱住 TA，隔着裤子握住 TA 的敏感部位，同时用胸夹住 TA 的屁股 30 秒"],
+    ["🍑","把 TA 抱起来，让 TA 跨坐在你腿上，从背后抱住 TA，隔着裤子握住 TA 的敏感部位 30 秒"],
+    ["💋","让 TA 躺下，你跨坐在 TA 脸上 30 秒，用胸夹住 TA 的脸"],
+    ["🌊","把 TA 的腿举起来，用胸夹住 TA 的敏感部位，同时从背后舔 TA 的脖子 30 秒"],
+    ["🔥","让 TA 跪着，你从背后抱住 TA，隔着裤子握住 TA 的敏感部位，同时用胸夹住 TA 的屁股 30 秒"],
+    ["🍑","把 TA 翻过去，从背后舔 TA 的屁股 30 秒"],
+    ["💦","让 TA 躺下，你跨坐在 TA 肚子上，隔着裤子握住 TA 的敏感部位，同时用胸夹住 TA 的屁股 30 秒"],
+    ["🌊","把 TA 的腿举起来，用胸夹住 TA 的敏感部位，同时从背后舔 TA 的大腿根 30 秒"],
+    ["🔥","让 TA 跪着，你从背后抱住 TA，从耳根一路吻到脚趾，30 秒"]
+  ],
+  heart:[
+    ["💞","和 TA 分享一件你一直没说出口的心意"],
+    ["🌙","和 TA 约定一件最近想一起完成的事"],
+    ["💍","对 TA 说一句「如果我们在一个城市就好了」"],
+    ["🕯️","关掉灯，和 TA 安静待 1 分钟"],
+    ["💬","问 TA：最近有什么想让我陪你做的？"],
+    ["🌟","和 TA 一起想一个未来旅行的目的地"],
+    ["🔥","和 TA 玩「谁先笑谁输」游戏，输的人今晚听 TA 的"],
+    ["💦","和 TA 约定一个属于你们的暗号，用来表达「我想要」"],
+    ["💞","和 TA 十指相扣，看着 TA 的眼睛说「我喜欢你」"],
+    ["🌙","和 TA 一起听一首你们都喜欢的歌，靠在一起"],
+    ["💍","对 TA 说一句「你让我变成了一个更好的人」"],
+    ["🕯️","和 TA 一起看窗外的夜景，什么都不说"],
+    ["💬","问 TA：你最喜欢我哪个瞬间？"],
+    ["🌟","和 TA 一起想一个你们未来的家是什么样子"],
+    ["🔥","和 TA 玩「用嘴喂对方吃东西」挑战，看谁更浪漫"],
+    ["💦","和 TA 约定一个属于你们的「安全词」，用来表达「停下来」"],
+    ["💞","和 TA 拥抱 1 分钟，什么都不做"],
+    ["🌙","和 TA 一起回忆你们第一次见面的场景"],
+    ["💍","对 TA 说一句「无论发生什么，我都会陪着你」"],
+    ["🕯️","和 TA 一起点蜡烛，慢慢享受这个夜晚"]
+  ]
 };
-let r18On=false;
 let pendingCard=false;
 function pickCard(kind){
-  const deck=CARDS[r18On?'r18':'sweet'][kind];
+  const deck=CARDS[kind];
   return deck[Math.floor(Math.random()*deck.length)];
 }
 function drawEventCard(color){
@@ -741,7 +731,6 @@ function drawEventCard(color){
   const tagMap={punish:['惩罚','tag-punish'],reward:['奖励','tag-reward'],heart:['心动','tag-heart']};
   const [tagName,tagCls]=tagMap[kind];
   const card=document.getElementById('eventCard');
-  card.classList.toggle('r18card',r18On);
   document.getElementById('eventEmoji').textContent=emoji;
   const tag=document.getElementById('eventTag');
   tag.textContent=tagName; tag.className='event-tag '+tagCls;
@@ -754,31 +743,6 @@ document.getElementById('eventOk').onclick=()=>{
   const skip=cardTurnSkip; cardTurnSkip=false;
   const color=state.turn;
   setTimeout(()=>endTurn(skip),300);
-};
-
-/* 主题切换 + 年龄确认 */
-document.getElementById('themeBtn').onclick=()=>{
-  if(!r18On){
-    document.getElementById('ageGate').classList.remove('hidden');
-  }else{
-    setTheme(false);
-  }
-};
-function setTheme(on){
-  r18On=on;
-  document.body.classList.toggle('r18',on);
-  document.getElementById('themeBtn').textContent = on?'💗 清新模式':'🔥 情趣模式';
-  document.getElementById('subTitle').textContent = on
-    ? '掷骰 · 心动 · 大冒险 🔞 仅供成年人私密娱乐'
-    : '掷骰 · 起飞 · 奔向彼此 ❤ 与 TA 一起飞回家';
-  if(state){ state.pieces.pink.forEach(p=>{}); renderPieces(); }
-}
-document.getElementById('ageYes').onclick=()=>{
-  document.getElementById('ageGate').classList.add('hidden');
-  setTheme(true);
-};
-document.getElementById('ageNo').onclick=()=>{
-  document.getElementById('ageGate').classList.add('hidden');
 };
 
 /* init */
